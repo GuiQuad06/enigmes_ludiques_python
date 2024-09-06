@@ -1,1 +1,1 @@
-SECRET = 'coucou '
+SECRET = 'abcdefgh'
