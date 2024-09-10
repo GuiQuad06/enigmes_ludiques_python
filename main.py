@@ -1,4 +1,4 @@
-from hamming_conversion import bin2int_big_endian, bin2int_little_endian
+from hamming_conversion import *
 
 
 def decoder_boutisme(char, endian):
@@ -15,6 +15,22 @@ def decoder_boutisme(char, endian):
     return string
 
 
+def decode_hamming(bit):
+    corrected_bits = ''
+    error = None
+    for i in range(0, len(bit), 7):
+        bloc = bit[i: i + 7]
+        bloc_list = list(map(int, list(bloc)))
+
+        pos_err = detect_err(bloc_list)
+        if pos_err != -1:
+            error = (bloc, i//(7*2) + 1, pos_err)
+            bloc_list = correct_err(bloc_list, pos_err)
+            bloc = ''.join(map(str, bloc_list))
+        corrected_bits += bloc[:4]
+    return decoder_boutisme(corrected_bits, 'big-endian'), error
+
+
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
@@ -23,12 +39,10 @@ def print_hi(name):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print_hi('PyCharm')
-    res = ''
-    msg = []
-    index = 0
-    with open('inputs/enigme8_1.txt', mode='r', encoding='utf-8') as fd:
-        message = fd.read().replace('\n', '')
 
-    print(decoder_boutisme(message, 'big-endian'))
-    # Message is not in little-endian
-    # print(decoder_boutisme(message, 'little-endian'))
+    with open('inputs/enigme8_2.txt', mode='r', encoding='utf-8') as fd:
+        bin = fd.read().replace('\n', '')
+        msg, err = decode_hamming(bin)
+        if err is not None:
+            print(f'erreur sur le bloc {err[0]} (char {err[1]}) position {err[2]}')
+        print(f'le message apres correction est: {msg}')
