@@ -1,3 +1,5 @@
+from graph import Graph
+
 class Nim:
     def __init__(self, n, p, bot=False):
         self.n = n
@@ -5,6 +7,7 @@ class Nim:
         self.cpt = n
         self.bot = bot
         self.possibilities = self.process_p()
+        self.graph = Graph(self.n, self.p)
 
     def process_p(self):
         tmp = []
@@ -26,4 +29,7 @@ class Nim:
 
     def bot_play(self):
         if self.cpt:
-            self.cpt -= 1
+            for i in range(self.cpt - 1, self.cpt - (self.p + 1), -1):
+                if i in self.graph.kernel:
+                    self.cpt = i
+                    return
